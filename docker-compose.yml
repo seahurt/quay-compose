@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  postgres:
+    image: "postgres"
+    environment:
+      - POSTGRES_USER=quayuser
+      - POSTGRES_PASSWORD=passw0rd+++
+      - POSTGRES_DB=quay
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redis:
+    image: "redis"
+    volumes:
+      - ./redis_data:/data
+    ports:
+      - "6379:6379"
+  quay-config:
+    image: "quay.io/projectquay/quay"
+    command: "config secret"
+    ports:
+      - "8443:8443"
+      - "8080:8080"
+  quay:
+    image: "quay.io/projectquay/quay:3.6.2"
+    privileged: true
+    volumes:
+      - ./config:/conf/stack
+      - ./storage:/datastorage
+    ports:
+      - "80:8080"
+      - "443:8443"
